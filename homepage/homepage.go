@@ -22,7 +22,7 @@ func (h *Handlers) LoggerMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
 		// A defer statement defers the execution of a function until the surrounding function returns.
-		defer h.logger.Println("Request processed in %s\n", time.Now().Sub(startTime))
+		defer h.logger.Printf("Request processed in %s\n", time.Now().Sub(startTime))
 		next(w, r)
 	}
 }
