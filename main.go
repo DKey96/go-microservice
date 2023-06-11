@@ -4,10 +4,17 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 const message = "Hello from the other side"
+
+var (
+	CertFile    = os.Getenv("DK_CERT_FILE")
+	KeyFile     = os.Getenv("DK_KEY_FILE")
+	ServiceAddr = os.Getenv("DK_SERVICE_ADDR")
+)
 
 func main() {
 	// Create a new server running on localhost (similar as Node.js express setup)
@@ -18,16 +25,16 @@ func main() {
 		w.Write([]byte(message))
 	})
 
-	srv := newServer(mux)
+	srv := newServer(mux, ServiceAddr)
 
 	// If there was an error when starting a server, it is being returned
-	err := srv.ListenAndServe()
+	err := srv.ListenAndServeTLS(CertFile, KeyFile)
 	if err != nil {
 		log.Fatalf("Server failed to start. Reason: %v", err)
 	}
 }
 
-func newServer(mux *http.ServeMux) *http.Server {
+func newServer(mux *http.ServeMux, serverAddr string) *http.Server {
 	// Setup based on https://blog.cloudflare.com/exposing-go-on-the-internet/
 	tlsConfig := &tls.Config{
 		// Only use curves which have assembly implementations
@@ -47,7 +54,7 @@ func newServer(mux *http.ServeMux) *http.Server {
 	}
 	// Create custom server with TLS Custom Setup and timeouts
 	srv := &http.Server{
-		Addr:         ":8000",
+		Addr:         serverAddr,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
