@@ -20,7 +20,7 @@ func main() {
 	h := homepage.NewHandlers(logger)
 	// Create a new server running on localhost (similar as Node.js express setup)
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", h.Home)
+	h.SetupRoutes(mux)
 
 	srv := server.Server(mux, ServiceAddr)
 

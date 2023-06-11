@@ -27,6 +27,10 @@ func (h *Handlers) LoggerMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func (h *Handlers) SetupRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/", h.LoggerMiddleware(h.Home))
+}
+
 // NewHandlers Creates a class
 func NewHandlers(logger *log.Logger) *Handlers {
 	return &Handlers{
